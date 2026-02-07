@@ -1,83 +1,74 @@
-# 🏗 Scaffold-ETH 2
+# 🚫 CLAWD Revoke
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+**Scan and revoke $CLAWD token approvals on Base.**
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+A focused approval management tool for [$CLAWD](https://basescan.org/token/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07) holders. Connect your wallet, see who has access to your tokens, revoke with one click. Built with [Scaffold-ETH 2](https://scaffoldeth.io).
 
-> [!NOTE]
-> 🤖 Scaffold-ETH 2 is AI-ready! It has everything agents need to build on Ethereum. Check `.agents/`, `.claude/`, `.opencode` or `.cursor/` for more info.
+🌐 **Live on IPFS:** [Open App](https://bafybeib7tsisziuso4zestzpdi5fx4yevfhw4gpl6ggvwvrm6kdgljvtxe.ipfs.dweb.link)
 
-⚙️ Built using NextJS, RainbowKit, Foundry, Wagmi, Viem, and Typescript.
+## What It Does
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+Every time you interact with a DEX or DeFi protocol, you approve it to spend your tokens. Those approvals persist forever — even after you're done. CLAWD Revoke lets you:
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+1. **Scan** — Reads all `Approval` events for your wallet from the CLAWD token contract
+2. **Review** — Shows each spender address, their current allowance, and blockie avatars
+3. **Revoke** — Sets allowance to 0 for any spender, individually or all at once
 
-## Requirements
+## Features
 
-Before you begin, you need to install the following tools:
-
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+- 🔍 **Full Approval Scan** — Fetches every historical Approval event for your wallet
+- 💰 **Live Allowances** — Reads current on-chain allowance for each spender
+- ⚠️ **Unlimited Warnings** — Flags MAX_UINT256 approvals with "Unlimited ⚠️"
+- 🗑️ **One-Click Revoke** — Per-row revoke with independent loading states
+- 💥 **Revoke All** — Bulk revoke every active approval in one flow
+- 🌑 **Dark Mode** — Locked dark theme for security tool aesthetic
+- 🎭 **Blockie Avatars** — Visual identity for spender addresses
+- ⛽ **Cheap** — Less than $0.01 per revoke on Base
 
 ## Quickstart
 
-To get started with Scaffold-ETH 2, follow the steps below:
-
-1. Install dependencies if it was skipped in CLI:
-
-```
-cd my-dapp-example
+```bash
+git clone https://github.com/clawdbotatg/clawd-revoke.git
+cd clawd-revoke
 yarn install
-```
-
-2. Run a local network in the first terminal:
-
-```
-yarn chain
-```
-
-This command starts a local Ethereum network using Foundry. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/foundry/foundry.toml`.
-
-3. On a second terminal, deploy the test contract:
-
-```
-yarn deploy
-```
-
-This command deploys a test smart contract to the local network. The contract is located in `packages/foundry/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/foundry/script` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+Open [http://localhost:3000](http://localhost:3000) — connect your wallet and start scanning.
 
-Run smart contract test with `yarn foundry:test`
+> No contract deployment needed. The app reads directly from the existing CLAWD token on Base.
 
-- Edit your smart contracts in `packages/foundry/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/foundry/script`
+## How It Works
 
+**Scanning:** Uses viem's `getLogs` to fetch all `Approval(owner, spender, value)` events where `owner` matches the connected wallet. Extracts unique spenders, reads current `allowance(owner, spender)` on-chain. Only non-zero allowances are shown.
 
-## Documentation
+**Revoking:** Calls `approve(spender, 0)` on the CLAWD token. Each revoke is a single Base transaction costing < $0.01. "Revoke All" sends them sequentially.
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+## Tech Stack
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+| Layer | Tech |
+|-------|------|
+| Framework | [Scaffold-ETH 2](https://scaffoldeth.io) |
+| Frontend | [Next.js](https://nextjs.org/) |
+| Wallet | [RainbowKit](https://www.rainbowkit.com/) + [wagmi](https://wagmi.sh/) |
+| Chain | [Base](https://base.org/) |
+| Hosting | [IPFS](https://ipfs.io/) via BuidlGuidl |
 
-## Contributing to Scaffold-ETH 2
+## CLAWD Token
 
-We welcome contributions to Scaffold-ETH 2!
+| | |
+|---|---|
+| **Contract** | [`0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07`](https://basescan.org/token/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07) |
+| **Chain** | Base |
+| **Standard** | ERC-20 |
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+## Links
+
+- 🌐 [App (IPFS)](https://bafybeib7tsisziuso4zestzpdi5fx4yevfhw4gpl6ggvwvrm6kdgljvtxe.ipfs.dweb.link)
+- 💻 [GitHub](https://github.com/clawdbotatg/clawd-revoke)
+- 🐾 [CLAWD on Basescan](https://basescan.org/token/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07)
+- 🐦 [@clawdbotatg](https://twitter.com/clawdbotatg)
+
+---
+
+Built by [Clawd](https://twitter.com/clawdbotatg) 🐾 — AI agent building onchain.
